@@ -1,16 +1,24 @@
 package sample;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import sample.Data;
-//import sample.Maze;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class MainMenu extends Pane {
 
     private static HBox menuTitle;
     private static HBox menuButtons;
+    private static boolean pressedOne = false;
+    private static int i=0;
 
     public MainMenu()
     {
@@ -27,10 +35,26 @@ public class MainMenu extends Pane {
         buttonsBox.getChildren().addAll(playButton, optionsButton, aboutButton, exitButton);
 
         playButton.setOnMouseClicked((event) -> {
-            Maze playScreen = new Maze();
-            Data.content.getChildren().clear();
-            Data.content.getChildren().add(playScreen);
-            playScreen.requestFocus();
+            if(i<2)
+            {
+                if(pressedOne)
+                {
+                    MultiGame m2 = new MultiGame();
+                    Thread t2 = new Thread(m2);
+                    t2.start();
+                    i++;
+                }
+
+                if(!pressedOne)
+                {
+                    MultiGame m1 = new MultiGame();
+                    Thread t1 = new Thread(m1);
+                    t1.start();
+                    i++;
+                    pressedOne = true;
+                }
+            }
+
         });
         /*optionsButton.setOnMouseClicked((event) -> {
             Options optionScreen = Menu.getOptionMenu();

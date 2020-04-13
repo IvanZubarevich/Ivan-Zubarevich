@@ -17,8 +17,7 @@ public class MainMenu extends Pane {
 
     private static HBox menuTitle;
     private static HBox menuButtons;
-    private static boolean pressedOne = false;
-    private static int i=0;
+    public static Group content = new Group();
 
     public MainMenu()
     {
@@ -35,42 +34,30 @@ public class MainMenu extends Pane {
         buttonsBox.getChildren().addAll(playButton, optionsButton, aboutButton, exitButton);
 
         playButton.setOnMouseClicked((event) -> {
-            if(i<2)
-            {
-                if(pressedOne)
-                {
-                    MultiGame m2 = new MultiGame();
-                    Thread t2 = new Thread(m2);
-                    t2.start();
-                    i++;
-                }
-
-                if(!pressedOne)
-                {
-                    MultiGame m1 = new MultiGame();
-                    Thread t1 = new Thread(m1);
-                    t1.start();
-                    i++;
-                    pressedOne = true;
-                }
-            }
+            Stage stage = new Stage();
+            Scene scene = new Scene(MainMenu.content, Data.WINDOW_WIDTH, Data.WINDOW_HEIGHT, Color.BLACK);
+            stage.setScene(scene);
+            stage.show();
+            MultiGame game = new MultiGame();
+            MultiGame.threads.add(new Thread(game));
+            MultiGame.threads.get(MultiGame.threads.size()-1).start();
 
         });
-        /*optionsButton.setOnMouseClicked((event) -> {
+        optionsButton.setOnMouseClicked((event) -> {
             Options optionScreen = Menu.getOptionMenu();
             Data.content.getChildren().clear();
             Data.content.getChildren().add(optionScreen);
             optionScreen.requestFocus();
         });
-        aboutButton.setOnMouseClicked((event) -> {
+        /*aboutButton.setOnMouseClicked((event) -> {
             About aboutScreen = Menu.getAboutMenu();
             Data.content.getChildren().clear();
             Data.content.getChildren().add(aboutScreen);
             aboutScreen.requestFocus();
-        });
+        });*/
         exitButton.setOnMouseClicked((event) -> {
             System.exit(0);
-        });*/
+        });
         menuButtons = new HBox(buttonsBox);
         menuButtons.setPrefWidth((double)Data.WINDOW_WIDTH);
         menuButtons.setAlignment(Pos.CENTER);

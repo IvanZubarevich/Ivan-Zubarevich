@@ -5,7 +5,7 @@ import javafx.scene.layout.Pane;
 
 public class Menu extends Pane {
 
-   // private static Options optionsMenu = new Options();
+   private static Options optionsMenu = new Options();
     private static MainMenu mainMenu = new MainMenu();
    // private static About aboutMenu = new About();
 
@@ -28,9 +28,9 @@ public class Menu extends Pane {
         return mainMenu;
     }
 
-   /* public static Options getOptionMenu()
+    public static Options getOptionMenu()
     {
         return optionsMenu;
-    }*/
+    }
 
 }

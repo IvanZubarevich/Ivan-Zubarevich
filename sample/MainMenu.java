@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -12,6 +13,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.*;
 
 public class MainMenu extends Pane {
 
@@ -31,16 +34,15 @@ public class MainMenu extends Pane {
         MenuButton optionsButton = new MenuButton(Data.OPTIONS);
         MenuButton aboutButton = new MenuButton(Data.ABOUT);
         MenuButton exitButton = new MenuButton(Data.EXIT);
-        buttonsBox.getChildren().addAll(playButton, optionsButton, aboutButton, exitButton);
+        MenuButton continueButton = new MenuButton(Data.CONTINUE);
+        buttonsBox.getChildren().addAll(playButton, continueButton, optionsButton, aboutButton, exitButton);
+
 
         playButton.setOnMouseClicked((event) -> {
-            Stage stage = new Stage();
-            Scene scene = new Scene(MainMenu.content, Data.WINDOW_WIDTH, Data.WINDOW_HEIGHT, Color.BLACK);
-            stage.setScene(scene);
-            stage.show();
-            MultiGame game = new MultiGame();
-            MultiGame.threads.add(new Thread(game));
-            MultiGame.threads.get(MultiGame.threads.size()-1).start();
+            Maze playScreen = new Maze();
+            Data.content.getChildren().clear();
+            Data.content.getChildren().add(playScreen);
+            playScreen.requestFocus();
 
         });
         optionsButton.setOnMouseClicked((event) -> {
@@ -49,12 +51,38 @@ public class MainMenu extends Pane {
             Data.content.getChildren().add(optionScreen);
             optionScreen.requestFocus();
         });
-        /*aboutButton.setOnMouseClicked((event) -> {
+        continueButton.setOnMouseClicked((event)->{
+            try
+            {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/Users/ivan/IdeaProjects/PACMAN/save.txt"));
+                int x1 = ois.readInt();
+                int y1 = ois.readInt();
+                int[] x2 = new int[Data.GHOST_NUMBER];
+                int[] y2 = new int[Data.GHOST_NUMBER];
+                for(int i=0; i<Data.GHOST_NUMBER; i++)
+                {
+                    x2[i]=ois.readInt();
+                    y2[i]=ois.readInt();
+                }
+                SimpleIntegerProperty livesCount = new SimpleIntegerProperty(ois.readInt());
+                SimpleIntegerProperty score = new SimpleIntegerProperty(ois.readInt());
+                Maze playScreen = new Maze(x1, y1, x2, y2, score, livesCount);
+                Data.content.getChildren().clear();
+                Data.content.getChildren().add(playScreen);
+                playScreen.requestFocus();
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+       aboutButton.setOnMouseClicked((event) -> {
             About aboutScreen = Menu.getAboutMenu();
             Data.content.getChildren().clear();
             Data.content.getChildren().add(aboutScreen);
             aboutScreen.requestFocus();
-        });*/
+        });
         exitButton.setOnMouseClicked((event) -> {
             System.exit(0);
         });

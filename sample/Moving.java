@@ -11,6 +11,8 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 import sample.Data;
 
+
+
 public abstract class Moving extends Parent {
 
     protected Maze maze;

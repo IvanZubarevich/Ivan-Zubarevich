@@ -10,16 +10,18 @@ import javafx.scene.text.Text;
 import sample.Data;
 import sample.MenuButton;
 
+import java.io.IOException;
+
 
 public class MessageBox extends Group {
-    public MessageBox(Maze maze, String messegeType) {
+    public MessageBox(Maze maze, String messageType) {
         Rectangle rectMessage;
         DropShadow shadow;
         Text textMessage;
         VBox buttonsBox;
         MenuButton restartButton;
         MenuButton exitButton;
-        if (messegeType == Data.PAUSE) {
+        if (messageType == Data.PAUSE) {
             rectMessage = new Rectangle((double)Data.calcGrid(5.0F), (double)Data.calcGrid(11.0F), 304.0D, 208.0D);
             rectMessage.setStroke(Color.WHITE);
             rectMessage.setStrokeWidth(5.0D);
@@ -32,7 +34,7 @@ public class MessageBox extends Group {
             shadow.setRadius(20.0D);
             rectMessage.setEffect(shadow);
             this.getChildren().add(rectMessage);
-            textMessage = new Text((double)Data.calcGrid(6.2F), (double)Data.calcGrid(15.3F), messegeType);
+            textMessage = new Text((double)Data.calcGrid(6.2F), (double)Data.calcGrid(15.3F), messageType);
             textMessage.setFill(Color.WHITE);
             textMessage.setFont(Data.PACKMAN_FONT_MESSAGE);
             buttonsBox = new VBox(20.0D);
@@ -51,7 +53,7 @@ public class MessageBox extends Group {
             this.getChildren().addAll(new Node[]{textMessage, buttonsBox});
         }
 
-        if (messegeType == Data.PK_TO_START) {
+        if (messageType == Data.PK_TO_START) {
             rectMessage = new Rectangle((double)Data.calcGrid(3.5F), (double)Data.calcGrid(12.0F), 360.0D, 96.0D);
             rectMessage.setStroke(Color.WHITE);
             rectMessage.setStrokeWidth(5.0D);
@@ -64,13 +66,13 @@ public class MessageBox extends Group {
             shadow.setRadius(20.0D);
             rectMessage.setEffect(shadow);
             this.getChildren().add(rectMessage);
-            textMessage = new Text((double)Data.calcGrid(4.5F), (double)Data.calcGrid(15.0F), messegeType);
+            textMessage = new Text((double)Data.calcGrid(4.5F), (double)Data.calcGrid(15.0F), messageType);
             textMessage.setFill(Color.WHITE);
             textMessage.setFont(Data.PACKMAN_FONT_MENU);
             this.getChildren().addAll(new Node[]{textMessage});
         }
 
-        if (messegeType == Data.YOU_LOSE || messegeType == Data.YOU_WIN) {
+        if (messageType == Data.YOU_LOSE || messageType == Data.YOU_WIN) {
             rectMessage = new Rectangle((double)Data.calcGrid(3.0F), (double)Data.calcGrid(11.0F), 368.0D, 208.0D);
             rectMessage.setStroke(Color.WHITE);
             rectMessage.setStrokeWidth(5.0D);
@@ -83,7 +85,7 @@ public class MessageBox extends Group {
             shadow.setRadius(20.0D);
             rectMessage.setEffect(shadow);
             this.getChildren().add(rectMessage);
-            textMessage = new Text((double)Data.calcGrid(4.5F), (double)Data.calcGrid(15.3F), messegeType);
+            textMessage = new Text((double)Data.calcGrid(4.5F), (double)Data.calcGrid(15.3F), messageType);
             textMessage.setFill(Color.WHITE);
             textMessage.setFont(Data.PACKMAN_FONT_MENU);
             buttonsBox = new VBox(20.0D);
@@ -99,6 +101,7 @@ public class MessageBox extends Group {
             });
             exitButton.setOnMouseClicked((event) -> {
                 maze.setMenu();
+
             });
             this.getChildren().addAll(new Node[]{textMessage, buttonsBox});
         }

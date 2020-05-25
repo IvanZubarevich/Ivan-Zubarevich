@@ -6,8 +6,8 @@ import javafx.scene.layout.Pane;
 public class Menu extends Pane {
 
    private static Options optionsMenu = new Options();
-    private static MainMenu mainMenu = new MainMenu();
-   // private static About aboutMenu = new About();
+   private static MainMenu mainMenu = new MainMenu();
+   private static About aboutMenu = new About();
 
     public Menu() {
         setMainMenu();
@@ -18,10 +18,7 @@ public class Menu extends Pane {
         this.getChildren().addAll(mainMenu);
     }
 
-   /* public static About getAboutMenu()
-    {
-        return aboutMenu;
-    }*/
+   public static About getAboutMenu() { return aboutMenu; }
 
     public static MainMenu getMainMenu()
     {

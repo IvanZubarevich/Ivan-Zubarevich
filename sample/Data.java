@@ -5,6 +5,8 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
+import java.io.ObjectOutputStream;
+
 import static java.lang.System.exit;
 
 public final class Data {

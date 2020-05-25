@@ -1,5 +1,6 @@
 package sample;
 
+import java.io.Serializable;
 import java.util.Random;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -10,7 +11,7 @@ import sample.Data;
 
 import static java.lang.System.exit;
 
-public class PacMan extends Moving {
+public class PacMan extends Moving{
     public int dotEatenCount;
     public SimpleIntegerProperty score;
     private static final int[] ROTATION_DEGREE = new int[]{0, 90, 180, 270};
@@ -246,7 +247,7 @@ public class PacMan extends Moving {
             }
         }
 
-    //    this.maze.pacManMeetsGhosts();
+       this.maze.pacManMeetsGhosts();
     }
 
     public void resetStatus() {

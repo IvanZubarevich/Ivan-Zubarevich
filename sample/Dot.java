@@ -7,7 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import sample.Data;
 
-public class Dot extends Parent {
+
+
+public class Dot extends Parent{
     public int dotType;
     private IntegerProperty radius;
 

@@ -1,7 +1,9 @@
 package sample;
 
+import com.sun.corba.se.impl.io.OutputStreamHook;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -17,7 +19,9 @@ import javafx.scene.text.Text;
 import sample.Data;
 import sample.Menu;
 
-public class Maze extends Parent {
+import java.io.*;
+
+public class Maze extends Parent{
     public PacMan pacMan;
     public final Ghost[] ghosts;
     public final Ghost[] allGhosts;
@@ -39,7 +43,7 @@ public class Maze extends Parent {
         this.waitForStart = new SimpleBooleanProperty(true);
 
         Ghost ghostBlinky = new Ghost(new Image("file:src/resource/ghostred1.png"), new Image("file:src/resource/ghostred2.png"), this, this.pacMan, 15, 14, 0, -1, 1);
-        Ghost ghostPinky = new Ghost(new Image("file:src/resource/ghostpink1.png"), new Image("file:src/esource/ghostpink2.png"), this, this.pacMan, 14, 15, 1, 0, 5);
+        Ghost ghostPinky = new Ghost(new Image("file:src/resource/ghostpink1.png"), new Image("file:src/resource/ghostpink2.png"), this, this.pacMan, 14, 15, 1, 0, 5);
         Ghost ghostInky = new Ghost(new Image("file:src/resource/ghostcyan1.png"), new Image("file:src/resource/ghostcyan2.png"), this, this.pacMan, 12, 15, 1, 0, 20);
         Ghost ghostClyde = new Ghost(new Image("file:src/resource/ghostorange1.png"), new Image("file:src/resource/ghostorange2.png"), this, this.pacMan, 16, 15, 1, 0, 30);
         this.allGhosts = new Ghost[]{ghostBlinky, ghostPinky, ghostInky, ghostClyde};
@@ -86,6 +90,75 @@ public class Maze extends Parent {
         this.setMaze(this.group);
        this.setDots();
        this.setOnKeyPressed((event) -> {
+            this.onKeyPressed(event);
+        });
+        this.group.getChildren().add(this.pacMan);
+        this.group.getChildren().add(scoreView);
+        this.group.getChildren().addAll(this.ghosts);
+        this.group.getChildren().addAll(this.messageStartBox, this.messagePauseBox, this.messageLoseBox, this.messageWinBox);
+        this.group.getChildren().addAll(livesView);
+        this.getChildren().add(this.group);
+    }
+
+    public Maze(int x1, int y1, int[] x2, int[] y2, SimpleIntegerProperty score, SimpleIntegerProperty livesCount) {
+        this.setFocused(true);
+        Data.resetMaze();
+        this.pacMan = new PacMan(this, x1, y1);
+        this.group = new Group();
+        this.gamePaused = new SimpleBooleanProperty(false);
+        this.waitForStart = new SimpleBooleanProperty(true);
+
+        pacMan.score = score;
+        Data.livesCount = livesCount;
+
+        Ghost ghostBlinky = new Ghost(new Image("file:src/resource/ghostred1.png"), new Image("file:src/resource/ghostred2.png"), this, this.pacMan, x2[0], y2[0], 0, -1, 1);
+        Ghost ghostPinky = new Ghost(new Image("file:src/resource/ghostpink1.png"), new Image("file:src/resource/ghostpink2.png"), this, this.pacMan, x2[1], y2[1], 1, 0, 5);
+        Ghost ghostInky = new Ghost(new Image("file:src/resource/ghostcyan1.png"), new Image("file:src/resource/ghostcyan2.png"), this, this.pacMan, x2[2], y2[2], 1, 0, 20);
+        Ghost ghostClyde = new Ghost(new Image("file:src/resource/ghostorange1.png"), new Image("file:src/resource/ghostorange2.png"), this, this.pacMan, 16, 15, 1, 0, 30);
+        this.allGhosts = new Ghost[]{ghostBlinky, ghostPinky, ghostInky, ghostClyde};
+        this.ghosts = new Ghost[Data.GHOST_NUMBER];
+
+        for(int i = 0; i < Data.GHOST_NUMBER; ++i) {
+            this.ghosts[i] = this.allGhosts[i];
+        }
+
+        Text textScore = new Text(Data.SCORE + pacMan.score);
+        textScore.textProperty().bind(pacMan.score.asString(Data.SCORE +" %1d "));
+        textScore.setFont(new Font(Data.FONT_SIZE));
+        textScore.setFill(Color.YELLOW);
+        textScore.setCache(true);
+        HBox scoreView = new HBox(10.0D, textScore);
+        scoreView.setTranslateX((double)Data.calcGrid(0.0F));
+        scoreView.setTranslateY((double)Data.calcGrid(32.0F));
+
+        ImageView livesImage1 = new ImageView(Data.PACMAN_IMAGE);
+        livesImage1.visibleProperty().bind(Data.livesCount.greaterThan(-1));
+        livesImage1.setTranslateY(5.0D);
+        livesImage1.setCache(true);
+        ImageView livesImage2 = new ImageView(Data.PACMAN_IMAGE);
+        livesImage2.visibleProperty().bind(Data.livesCount.greaterThan(0));
+        livesImage2.setTranslateY(5.0D);
+        livesImage2.setCache(true);
+        ImageView livesImage3 = new ImageView(Data.PACMAN_IMAGE);
+        livesImage3.visibleProperty().bind(Data.livesCount.greaterThan(1));
+        livesImage3.setTranslateY(5.0D);
+        livesImage3.setCache(true);
+        Text textLives = new Text(Data.LIVES);
+        textLives.setFont(new Font(Data.FONT_SIZE));
+        textLives.setFill(Color.YELLOW);
+        HBox livesView = new HBox(10.0D, new Node[]{textLives, livesImage1, livesImage2, livesImage3});
+        livesView.setTranslateX((double)Data.calcGrid(17.7F));
+        livesView.setTranslateY((double)Data.calcGrid(32.0F));
+        this.messageStartBox = new MessageBox(this, Data.PK_TO_START);
+        this.messagePauseBox = new MessageBox(this, Data.PAUSE);
+        this.messageLoseBox = new MessageBox(this, Data.YOU_LOSE);
+        this.messageWinBox = new MessageBox(this, Data.YOU_WIN);
+        this.messagePauseBox.setVisible(false);
+        this.messageLoseBox.setVisible(false);
+        this.messageWinBox.setVisible(false);
+        this.setMaze(this.group);
+        this.setDots();
+        this.setOnKeyPressed((event) -> {
             this.onKeyPressed(event);
         });
         this.group.getChildren().add(this.pacMan);
@@ -306,11 +379,31 @@ public class Maze extends Parent {
         }
     }
 
-    public void setMenu() {
-        this.pacMan.stop();
-        Data.content.getChildren().clear();
-        Data.content.getChildren().add(Menu.getMainMenu());
-        Menu.getMainMenu().requestFocus();
+    public boolean setMenu(){
+       try
+       {
+           ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("/Users/ivan/IdeaProjects/PACMAN/save.txt", false));
+           oos.writeInt(pacMan.x);
+           oos.writeInt(pacMan.y);
+           for(int i =0; i< Data.GHOST_NUMBER; i++)
+           {
+               oos.writeInt(ghosts[i].x);
+               oos.writeInt(ghosts[i].y);
+           }
+           oos.writeInt(Data.livesCount.getValue());
+           oos.writeInt(pacMan.score.getValue());
+           oos.flush();
+       }
+       catch (FileNotFoundException e) {
+        e.printStackTrace();
+       } catch (IOException e) {
+        e.printStackTrace();
+       }
+       this.pacMan.stop();
+       Data.content.getChildren().clear();
+       Data.content.getChildren().add(Menu.getMainMenu());
+       Menu.getMainMenu().requestFocus();
+       return true;
     }
 
     public void resume() {
@@ -356,19 +449,56 @@ public class Maze extends Parent {
 
     }
 
-   /* public boolean hasMet(Ghost ghost) {
-
+   public boolean hasMet(Ghost ghost) {
+       int distanceThreshold = 22;
+       int x1 = ghost.imageX.get();
+       int x2 = this.pacMan.imageX.get();
+       int diffX = Math.abs(x1 - x2);
+       if (diffX >= distanceThreshold) {
+           return false;
+       } else {
+           int y1 = ghost.imageY.get();
+           int y2 = this.pacMan.imageY.get();
+           int diffY = Math.abs(y1 - y2);
+           if (diffY >= distanceThreshold) {
+               return false;
+           } else {
+               return diffY * diffY + diffX * diffX <= distanceThreshold * distanceThreshold;
+           }
+       }
     }
 
     public void pacManMeetsGhosts() {
+        for(int y = 0; y < Data.GHOST_NUMBER; ++y) {
+            Ghost g = this.ghosts[y];
+            if (this.hasMet(g)) {
+                if (g.isHollow) {
+                    this.pacManEatsGhost(g);
+                } else {
+                    if (Data.livesCount.get() != 0) {
+                        Data.livesCount.set(Data.livesCount.get() - 1);
+                        this.pacMan.resetStatus();
+                        for (int x = 0; x < Data.GHOST_NUMBER; ++x) {
+                            this.ghosts[x].resetStatus();
+                        }
 
-
-
+                    } else {
+                        for (int x = 0; x < Data.GHOST_NUMBER; ++x) {
+                            this.ghosts[x].stop();
+                        }
+                        this.pacMan.stop();
+                        this.messageLoseBox.setVisible(true);
+                    }
+                }
+            }
+        }
     }
 
     public void pacManEatsGhost(Ghost ghost) {
-
-    }*/
+        ghost.stop();
+        ghost.resetStatus();
+        ghost.trapCounter = -10;
+    }
 
     private class СontrolThread extends Thread {
         private KeyEvent event;
